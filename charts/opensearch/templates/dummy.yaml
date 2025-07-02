@@ -1,0 +1,7 @@
+# Just a dummy so Helm doesn't fail on empty templates
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dummy-opensearch
+data:
+  dummy: "true"
