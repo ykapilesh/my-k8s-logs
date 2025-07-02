@@ -1,56 +1,56 @@
-replicas: 1
-
-nodeGroup: single-node
-
-roles:
-  master: "true"
-  ingest: "true"
-  data: "true"
-  remote_cluster_client: "false"
-
-persistence:
-  enabled: true
-  size: 2Gi
-  storageClass: local-path
-
-resources:
-  requests:
-    cpu: 100m
-    memory: 512Mi
-  limits:
-    cpu: 300m
-    memory: 1Gi
-
-opensearchJavaOpts: "-Xmx512M -Xms512M"
-
 opensearch:
+  nodeGroup: single-node
+
+  replicas: 1
+
+  roles:
+    master: "true"
+    ingest: "true"
+    data: "true"
+    remote_cluster_client: "false"
+
+  persistence:
+    enabled: true
+    size: 2Gi
+    storageClass: local-path
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 300m
+      memory: 1Gi
+
+  opensearchJavaOpts: "-Xmx512M -Xms512M"
+
   extraEnvs:
     - name: OPENSEARCH_INITIAL_ADMIN_PASSWORD
-      value: "admin"
+      value: "Opensearch123"
 
-securityConfig:
-  enabled: false
+  securityConfig:
+    enabled: false
 
-security:
-  enabled: false
+  security:
+    enabled: false
 
-service:
-  type: NodePort
-  port: 9200
-  nodePort: 30920
+  service:
+    type: NodePort
+    port: 9200
+    nodePort: 30920
 
-indexManagement:
-  enabled: true
-  policies:
-    - policyId: delete-after-2h
-      description: "Delete logs after 2 hours"
-      schema:
-        policy:
-          description: "delete after 2h"
-          default_state: "delete"
-          states:
-            - name: "delete"
-              actions:
-                - delete:
-                    delete_searchable_snapshot: true
-              transitions: []
+  indexManagement:
+    enabled: true
+    policies:
+      - policyId: delete-after-2h
+        description: "Delete logs after 2 hours"
+        schema:
+          policy:
+            description: "delete after 2h"
+            default_state: "delete"
+            states:
+              - name: "delete"
+                actions:
+                  - delete:
+                      delete_searchable_snapshot: true
+                transitions: []
