@@ -1,7 +1,12 @@
-opensearchDashboards:
+opensearch-dashboards:
   fullnameOverride: "opensearch-dashboards"
 
   opensearchHosts: "http://opensearch.logging.svc.cluster.local:9200"
+
+  service:
+    type: NodePort
+    port: 5601
+    nodePort: 30561
 
   resources:
     requests:
@@ -10,8 +15,3 @@ opensearchDashboards:
     limits:
       cpu: 100m
       memory: 512Mi
-
-  service:
-    type: NodePort
-    port: 5601
-    nodePort: 30561
