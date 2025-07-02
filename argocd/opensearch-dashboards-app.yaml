@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/ykapilesh/your-repo.git'
+    repoURL: 'https://github.com/ykapilesh/my-k8s-logs.git'
     path: charts/opensearch-dashboards
     targetRevision: main
   destination:
