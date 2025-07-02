@@ -1,20 +1,24 @@
 filebeat:
   fullnameOverride: "filebeat"
 
+  # Disable internal Elasticsearch and Kibana references
   elasticsearch:
     enabled: false
 
   kibana:
     enabled: false
 
+  # Explicitly disable all setup steps that look for certificates
   setup:
     kibana:
       enabled: false
     ilm:
       enabled: false
 
+  # Absolutely disable any cert secret mounts
   secretMounts: []
 
+  # Your filebeat.yml output to opensearch
   filebeatConfig:
     filebeat.yml: |
       filebeat.autodiscover:
