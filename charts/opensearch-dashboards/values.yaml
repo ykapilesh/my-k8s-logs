@@ -3,6 +3,10 @@ opensearch-dashboards:
 
   opensearchHosts: "http://opensearch.logging.svc.cluster.local:9200"
 
+  extraEnvs:
+    - name: DISABLE_SECURITY_PLUGIN
+      value: "true"
+
   service:
     type: NodePort
     port: 5601
