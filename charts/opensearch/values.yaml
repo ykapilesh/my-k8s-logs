@@ -1,6 +1,6 @@
 replicas: 1
-minimumMasterNodes: 1
 
+# Ensure ALL nodes use same small resources
 resources:
   requests:
     cpu: 100m
@@ -14,15 +14,24 @@ persistence:
   size: 2Gi
   storageClass: local-path
 
-opensearchJavaOpts: "-Xmx256m -Xms256m"
-
-extraEnvs:
-  - name: "DISABLE_INSTALL_DEMO_CONFIG"
-    value: "true"
-  - name: "DISABLE_SECURITY_PLUGIN"
-    value: "true"
-
+# Disables security plugin
 securityConfig:
+  enabled: false
+
+# JVM heap small
+opensearchJavaOpts: "-Xmx512M -Xms512M"
+
+# Only deploy one type of node to keep ultra-light
+roles:
+  master: "true"
+  ingest: "true"
+  data: "true"
+  remote_cluster_client: "false"
+
+nodeGroup: single-node
+
+# No dashboards deployed here to keep lighter (deploy separately if needed)
+dashboards:
   enabled: false
 
 service:
@@ -30,13 +39,7 @@ service:
   port: 9200
   nodePort: 30920
 
-dashboards:
-  enabled: true
-  service:
-    type: NodePort
-    port: 5601
-    nodePort: 30561
-
+# Index policy to delete after 2 hours
 indexManagement:
   enabled: true
   policies:
