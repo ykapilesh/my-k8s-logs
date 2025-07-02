@@ -1,0 +1,8 @@
+apiVersion: v2
+name: opensearch-dashboards
+description: A Helm chart for OpenSearch Dashboards wrapper
+version: 0.1.0
+dependencies:
+  - name: opensearch-dashboards
+    version: 2.18.0
+    repository: https://opensearch-project.github.io/helm-charts/

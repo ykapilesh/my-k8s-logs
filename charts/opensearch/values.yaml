@@ -10,7 +10,7 @@ opensearch:
     - data
 
   plugins:
-    install: []  # no plugins, super minimal
+    install: []  # no extra plugins
 
   persistence:
     enabled: true
@@ -32,8 +32,10 @@ opensearch:
       value: "true"
     - name: DISABLE_SECURITY_PLUGIN
       value: "true"
+    - name: DISABLE_PERFORMANCE_ANALYZER_AGENT_CLI
+      value: "true"
     - name: OPENSEARCH_INITIAL_ADMIN_PASSWORD
-      value: "Opensearch123"
+      value: "Opensearch#123"
 
   securityConfig:
     enabled: false
