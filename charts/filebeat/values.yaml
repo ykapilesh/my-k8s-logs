@@ -1,15 +1,20 @@
 filebeat:
   fullnameOverride: "filebeat"
 
-  # Turn off the built-in Elasticsearch references that mount the certs
   elasticsearch:
     enabled: false
 
-  # Explicitly disable all certificate mounts
-  secretMounts: []
-  
+  kibana:
+    enabled: false
 
-  # Your actual output config
+  setup:
+    kibana:
+      enabled: false
+    ilm:
+      enabled: false
+
+  secretMounts: []
+
   filebeatConfig:
     filebeat.yml: |
       filebeat.autodiscover:
@@ -23,8 +28,6 @@ filebeat:
 
       output.elasticsearch:
         hosts: ["http://opensearch.logging.svc.cluster.local:9200"]
-        username: "admin"
-        password: "admin"
         ssl.enabled: false
 
   resources:
