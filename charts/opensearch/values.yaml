@@ -1,0 +1,54 @@
+replicas: 1
+minimumMasterNodes: 1
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    cpu: 300m
+    memory: 1Gi
+
+persistence:
+  enabled: true
+  size: 2Gi
+  storageClass: local-path
+
+opensearchJavaOpts: "-Xmx256m -Xms256m"
+
+extraEnvs:
+  - name: "DISABLE_INSTALL_DEMO_CONFIG"
+    value: "true"
+  - name: "DISABLE_SECURITY_PLUGIN"
+    value: "true"
+
+securityConfig:
+  enabled: false
+
+service:
+  type: NodePort
+  port: 9200
+  nodePort: 30920
+
+dashboards:
+  enabled: true
+  service:
+    type: NodePort
+    port: 5601
+    nodePort: 30561
+
+indexManagement:
+  enabled: true
+  policies:
+    - policyId: delete-after-2h
+      description: "Delete logs after 2 hours"
+      schema:
+        policy:
+          description: "delete after 2h"
+          default_state: "delete"
+          states:
+            - name: "delete"
+              actions:
+                - delete:
+                    delete_searchable_snapshot: true
+              transitions: []
