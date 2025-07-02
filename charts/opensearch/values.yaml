@@ -1,32 +1,26 @@
 opensearch:
-  nodeGroup: single-node
-
-  replicas: 1
-
-  roles:
-    master: "true"
-    ingest: "true"
-    data: "true"
-    remote_cluster_client: "false"
-
-  persistence:
-    enabled: true
-    size: 2Gi
-    storageClass: local-path
-
-  resources:
-    requests:
-      cpu: 100m
-      memory: 512Mi
-    limits:
-      cpu: 300m
-      memory: 1Gi
-
-  opensearchJavaOpts: "-Xmx512M -Xms512M"
-
-  extraEnvs:
-    - name: OPENSEARCH_INITIAL_ADMIN_PASSWORD
-      value: "Opensearch123"
+  nodePools:
+    - name: single-node
+      replicas: 1
+      roles:
+        - master
+        - ingest
+        - data
+      persistence:
+        enabled: true
+        size: 2Gi
+        storageClass: local-path
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          cpu: 300m
+          memory: 1Gi
+      opensearchJavaOpts: "-Xmx512M -Xms512M"
+      extraEnvs:
+        - name: OPENSEARCH_INITIAL_ADMIN_PASSWORD
+          value: "Opensearch123"
 
   securityConfig:
     enabled: false
