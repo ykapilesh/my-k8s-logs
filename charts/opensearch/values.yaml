@@ -1,41 +1,42 @@
+nodeGroup: single-node
+
 replicas: 1
 
-nodeGroup: default
-
-nodes:
-  default:
-    replicas: 1
-    roles:
-      master: true
-      ingest: true
-      data: true
-      remote_cluster_client: false
-    resources:
-      requests:
-        cpu: 100m
-        memory: 512Mi
-      limits:
-        cpu: 300m
-        memory: 1Gi
+roles:
+  master: "true"
+  ingest: "true"
+  data: "true"
+  remote_cluster_client: "false"
 
 persistence:
   enabled: true
   size: 2Gi
   storageClass: local-path
 
-securityConfig:
-  enabled: false
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    cpu: 300m
+    memory: 1Gi
+
+opensearchJavaOpts: "-Xmx512M -Xms512M"
 
 extraEnvs:
   - name: OPENSEARCH_INITIAL_ADMIN_PASSWORD
     value: "admin"
 
-opensearchJavaOpts: "-Xmx512M -Xms512M"
-
 service:
   type: NodePort
   port: 9200
   nodePort: 30920
+
+securityConfig:
+  enabled: false
+
+security:
+  enabled: false
 
 indexManagement:
   enabled: true
