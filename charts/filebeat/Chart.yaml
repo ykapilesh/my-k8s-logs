@@ -1,5 +1,10 @@
 apiVersion: v2
 name: filebeat
-description: Minimal Filebeat chart
+description: Filebeat GitOps wrapper
 type: application
 version: 0.1.0
+
+dependencies:
+  - name: filebeat
+    version: 8.5.1
+    repository: https://helm.elastic.co
