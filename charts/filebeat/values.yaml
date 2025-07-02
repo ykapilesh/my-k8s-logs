@@ -1,5 +1,14 @@
 filebeat:
   fullnameOverride: "filebeat"
+
+  # Turn off the built-in Elasticsearch references that mount the certs
+  elasticsearch:
+    enabled: false
+
+  # Explicitly disable all certificate mounts
+  secretMounts: []
+
+  # Your actual output config
   filebeatConfig:
     filebeat.yml: |
       filebeat.autodiscover:
@@ -16,9 +25,6 @@ filebeat:
         username: "admin"
         password: "admin"
         ssl.enabled: false
-
-  extraVolumes: []
-  extraVolumeMounts: []
 
   resources:
     requests:
