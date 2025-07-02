@@ -1,6 +1,6 @@
-nodeGroup: single-node
-
 replicas: 1
+
+nodeGroup: single-node
 
 roles:
   master: "true"
@@ -23,20 +23,21 @@ resources:
 
 opensearchJavaOpts: "-Xmx512M -Xms512M"
 
-extraEnvs:
-  - name: OPENSEARCH_INITIAL_ADMIN_PASSWORD
-    value: "admin"
-
-service:
-  type: NodePort
-  port: 9200
-  nodePort: 30920
+opensearch:
+  extraEnvs:
+    - name: OPENSEARCH_INITIAL_ADMIN_PASSWORD
+      value: "admin"
 
 securityConfig:
   enabled: false
 
 security:
   enabled: false
+
+service:
+  type: NodePort
+  port: 9200
+  nodePort: 30920
 
 indexManagement:
   enabled: true
