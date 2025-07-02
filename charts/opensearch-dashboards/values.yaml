@@ -1,10 +1,6 @@
 opensearchDashboards:
-  fullnameOverride: "opensearch-dashboards"
-
-  # Connect to your OpenSearch cluster
   opensearchHosts: "http://opensearch.logging.svc.cluster.local:9200"
 
-  # Disable all security plugins so no login screen
   extraEnvs:
     - name: DISABLE_SECURITY_DASHBOARDS_PLUGIN
       value: "true"
@@ -13,13 +9,11 @@ opensearchDashboards:
 
   opensearch_ssl_verification_mode: none
 
-  # NodePort service so you can access from your laptop browser
   service:
     type: NodePort
     port: 5601
     nodePort: 30561
 
-  # Minimal resources since your laptop is limited
   resources:
     requests:
       cpu: 50m
