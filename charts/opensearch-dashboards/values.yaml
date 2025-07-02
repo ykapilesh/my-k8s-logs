@@ -9,6 +9,7 @@ opensearchDashboards:
 
   opensearch_ssl_verification_mode: none
 
+  
   service:
     type: NodePort
     port: 5601
