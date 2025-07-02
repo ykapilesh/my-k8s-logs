@@ -1,5 +1,8 @@
 apiVersion: v2
 name: opensearch
-description: Minimal OpenSearch chart
-type: application
+description: My local override
 version: 0.1.0
+dependencies:
+  - name: opensearch
+    version: "2.18.0"
+    repository: "https://opensearch-project.github.io/helm-charts/"
