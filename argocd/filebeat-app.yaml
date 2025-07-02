@@ -6,11 +6,11 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/ykapilesh/my-k8s-logs.git'
+    repoURL: https://github.com/ykapilesh/my-k8s-logs.git
     targetRevision: main
     path: charts/filebeat
   destination:
-    server: 'https://kubernetes.default.svc'
+    server: https://kubernetes.default.svc
     namespace: logging
   syncPolicy:
     automated:

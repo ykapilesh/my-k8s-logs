@@ -1,0 +1,7 @@
+# Dummy template so Helm doesn't fail on empty templates
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dummy-filebeat
+data:
+  dummy: "true"
