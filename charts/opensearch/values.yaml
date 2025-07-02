@@ -1,9 +1,7 @@
 replicas: 1
 
-# Disable multi-node by defining one nodeGroup called "default"
 nodeGroup: default
 
-# Set one node with all roles enabled
 nodes:
   default:
     replicas: 1
@@ -27,6 +25,10 @@ persistence:
 
 securityConfig:
   enabled: false
+
+extraEnvs:
+  - name: OPENSEARCH_INITIAL_ADMIN_PASSWORD
+    value: "admin"
 
 opensearchJavaOpts: "-Xmx512M -Xms512M"
 
