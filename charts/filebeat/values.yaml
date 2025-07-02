@@ -10,8 +10,11 @@ filebeatConfig:
 
     output.elasticsearch:
       hosts: ["http://opensearch-cluster-master.logging.svc.cluster.local:9200"]
-      index: "kubernetes-%{+yyyy.MM.dd.HH}"
-      pipeline: ""
+      protocol: "http"
+      ssl.enabled: false
+      ssl.verification_mode: none
+      username: ""
+      password: ""
 
 elasticsearch:
   hosts: ["http://opensearch-cluster-master.logging.svc.cluster.local:9200"]
@@ -19,14 +22,14 @@ elasticsearch:
     enabled: false
 
 secretMounts: []
+extraVolumes: []
+extraVolumeMounts: []
 
-# Ensure TLS is disabled at global chart level
 ssl:
   enabled: false
 
-# Ensure Filebeat doesn't look for cert secrets
-extraVolumes: []
-extraVolumeMounts: []
+# Disable setting up any certs
+certs: {}
 
 setup:
   kibana:
