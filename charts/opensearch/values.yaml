@@ -3,11 +3,12 @@ opensearch:
   clusterName: "opensearch-cluster"
   nodeGroup: "single-node"
   replicas: 1
-
   roles:
     - master
     - ingest
     - data
+
+  singleNode: true  # ✅ this disables cluster.initial_master_nodes injection
 
   opensearchJavaOpts: "-Xms512m -Xmx512m"
 
@@ -43,18 +44,3 @@ opensearch:
     type: NodePort
     port: 9200
     nodePort: 30920
-
-  # Optional: safer health checks so ArgoCD / K8s doesn't kill too early
-  startupProbe:
-    tcpSocket:
-      port: 9200
-    initialDelaySeconds: 10
-    periodSeconds: 10
-    failureThreshold: 60
-
-  readinessProbe:
-    tcpSocket:
-      port: 9200
-    initialDelaySeconds: 5
-    periodSeconds: 5
-    failureThreshold: 10
