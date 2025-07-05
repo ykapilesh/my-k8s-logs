@@ -1,19 +1,14 @@
 opensearch:
   fullnameOverride: "opensearch"
-
   clusterName: "opensearch-cluster"
   nodeGroup: "single-node"
   replicas: 1
-
   roles:
     - master
     - ingest
     - data
 
   opensearchJavaOpts: "-Xms512m -Xmx512m"
-
-  plugins:
-    install: []
 
   persistence:
     enabled: true
@@ -29,6 +24,10 @@ opensearch:
       memory: "768Mi"
 
   extraEnvs:
+    - name: cluster.initial_master_nodes
+      value: ""
+    - name: discovery.seed_hosts
+      value: ""
     - name: discovery.type
       value: "single-node"
     - name: DISABLE_INSTALL_DEMO_CONFIG
@@ -38,15 +37,10 @@ opensearch:
     - name: DISABLE_PERFORMANCE_ANALYZER_AGENT_CLI
       value: "true"
 
-  # Override any default bootstrap envs injected by the chart to empty so they don't conflict
-  clusterInitialMasterNodes: ""
-  discoverySeedHosts: ""
-
   securityConfig:
     enabled: false
   security:
     enabled: false
-
 
   service:
     type: NodePort
