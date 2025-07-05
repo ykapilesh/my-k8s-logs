@@ -1,64 +1,63 @@
-opensearch:
-  fullnameOverride: "opensearch"
+fullnameOverride: "opensearch"
 
-  clusterName: "opensearch-cluster"
-  nodeGroup: "single-node"
-  replicas: 1
-  roles:
-    - master
-    - ingest
-    - data
+clusterName: "opensearch-cluster"
+nodeGroup: "single-node"
+replicas: 1
+roles:
+  - master
+  - data
+  - ingest
 
-  plugins:
-    install: []  # no extra plugins
+plugins:
+  install: []  # no extra plugins
 
-  persistence:
-    enabled: true
-    size: 2Gi
-    storageClass: "local-path"
+persistence:
+  enabled: true
+  size: 2Gi
+  storageClass: "local-path"
 
-  opensearchJavaOpts: "-Xmx512M -Xms512M"
+opensearchJavaOpts: "-Xmx512M -Xms512M"
 
-  resources:
-    requests:
-      cpu: 100m
-      memory: 512Mi
-    limits:
-      cpu: 300m
-      memory: 1Gi
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    cpu: 300m
+    memory: 1Gi
 
-  extraEnvs:
-    - name: DISABLE_INSTALL_DEMO_CONFIG
-      value: "true"
-    - name: DISABLE_SECURITY_PLUGIN
-      value: "true"
-    - name: DISABLE_PERFORMANCE_ANALYZER_AGENT_CLI
-      value: "true"
-    - name: OPENSEARCH_INITIAL_ADMIN_PASSWORD
-      value: "Opensearch#123"
+extraEnvs:
+  - name: "discovery.type"
+    value: "single-node"
+  - name: DISABLE_SECURITY_PLUGIN
+    value: "true"
+  - name: DISABLE_INSTALL_DEMO_CONFIG
+    value: "true"
+  - name: DISABLE_PERFORMANCE_ANALYZER_AGENT_CLI
+    value: "true"
 
-  securityConfig:
-    enabled: false
-  security:
-    enabled: false
+securityConfig:
+  enabled: false
+security:
+  enabled: false
 
-  service:
-    type: NodePort
-    port: 9200
-    nodePort: 30920
+service:
+  type: NodePort
+  port: 9200
+  nodePort: 30920
 
-  indexManagement:
-    enabled: true
-    policies:
-      - policyId: delete-after-2h
-        description: "Delete logs after 2 hours"
-        schema:
-          policy:
-            description: "delete after 2h"
-            default_state: "delete"
-            states:
-              - name: "delete"
-                actions:
-                  - delete:
-                      delete_searchable_snapshot: true
-                transitions: []
+indexManagement:
+  enabled: true
+  policies:
+    - policyId: delete-after-2h
+      description: "Delete logs after 2 hours"
+      schema:
+        policy:
+          description: "delete after 2h"
+          default_state: "delete"
+          states:
+            - name: "delete"
+              actions:
+                - delete:
+                    delete_searchable_snapshot: true
+              transitions: []

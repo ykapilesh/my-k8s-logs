@@ -1,24 +1,24 @@
-opensearchDashboards:
-  opensearchHosts: "http://opensearch.logging.svc.cluster.local:9200"
+fullnameOverride: "opensearch-dashboards"
 
-  extraEnvs:
-    - name: DISABLE_SECURITY_DASHBOARDS_PLUGIN
-      value: "true"
-    - name: DISABLE_SECURITY_PLUGIN
-      value: "true"
+opensearchHosts: "http://opensearch.logging.svc.cluster.local:9200"
 
-  opensearch_ssl_verification_mode: none
+extraEnvs:
+  - name: DISABLE_SECURITY_DASHBOARDS_PLUGIN
+    value: "true"
+  - name: DISABLE_SECURITY_PLUGIN
+    value: "true"
 
-  
-  service:
-    type: NodePort
-    port: 5601
-    nodePort: 30561
+opensearch_ssl_verification_mode: none
 
-  resources:
-    requests:
-      cpu: 50m
-      memory: 256Mi
-    limits:
-      cpu: 100m
-      memory: 512Mi
+service:
+  type: NodePort
+  port: 5601
+  nodePort: 30561
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 256Mi
+  limits:
+    cpu: 100m
+    memory: 512Mi
