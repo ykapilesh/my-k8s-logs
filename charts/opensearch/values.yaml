@@ -38,6 +38,10 @@ opensearch:
     - name: DISABLE_PERFORMANCE_ANALYZER_AGENT_CLI
       value: "true"
 
+  # Override any default bootstrap envs injected by the chart to empty so they don't conflict
+  clusterInitialMasterNodes: ""
+  discoverySeedHosts: ""
+
   securityConfig:
     enabled: false
   security:

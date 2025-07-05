@@ -1,0 +1,326 @@
+---
+# Source: opensearch/charts/opensearch/templates/poddisruptionbudget.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: "opensearch-pdb"
+  labels:
+    helm.sh/chart: opensearch-2.18.0
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "2.12.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: opensearch
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: opensearch
+      app.kubernetes.io/instance: release-name
+---
+# Source: opensearch/charts/opensearch/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opensearch-config
+  labels:
+    helm.sh/chart: opensearch-2.18.0
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "2.12.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: opensearch
+data:
+  opensearch.yml: |
+    cluster.name: opensearch-cluster
+    
+    # Bind to all interfaces because we don't know what IP address Docker will assign to us.
+    network.host: 0.0.0.0
+    
+    # Setting network.host to a non-loopback address enables the annoying bootstrap checks. "Single-node" mode disables them again.
+    # Implicitly done if ".singleNode" is set to "true".
+    # discovery.type: single-node
+    
+    # Start OpenSearch Security Demo Configuration
+    # WARNING: revise all the lines below before you go into production
+    plugins:
+      security:
+        ssl:
+          transport:
+            pemcert_filepath: esnode.pem
+            pemkey_filepath: esnode-key.pem
+            pemtrustedcas_filepath: root-ca.pem
+            enforce_hostname_verification: false
+          http:
+            enabled: true
+            pemcert_filepath: esnode.pem
+            pemkey_filepath: esnode-key.pem
+            pemtrustedcas_filepath: root-ca.pem
+        allow_unsafe_democertificates: true
+        allow_default_init_securityindex: true
+        authcz:
+          admin_dn:
+            - CN=kirk,OU=client,O=client,L=test,C=de
+        audit.type: internal_opensearch
+        enable_snapshot_restore_privilege: true
+        check_snapshot_restore_write_privileges: true
+        restapi:
+          roles_enabled: ["all_access", "security_rest_api_access"]
+        system_indices:
+          enabled: true
+          indices:
+            [
+              ".opendistro-alerting-config",
+              ".opendistro-alerting-alert*",
+              ".opendistro-anomaly-results*",
+              ".opendistro-anomaly-detector*",
+              ".opendistro-anomaly-checkpoints",
+              ".opendistro-anomaly-detection-state",
+              ".opendistro-reports-*",
+              ".opendistro-notifications-*",
+              ".opendistro-notebooks",
+              ".opendistro-asynchronous-search-response*",
+            ]
+    ######## End OpenSearch Security Demo Configuration ########
+---
+# Source: opensearch/templates/dummy.yaml
+# Just a dummy so Helm doesn't fail on empty templates
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dummy-opensearch
+data:
+  dummy: "true"
+---
+# Source: opensearch/charts/opensearch/templates/service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: opensearch
+  labels:
+    helm.sh/chart: opensearch-2.18.0
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "2.12.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: opensearch
+  annotations:
+    {}
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: release-name
+  ports:
+  - name: http
+    protocol: TCP
+    port: 9200
+    nodePort: 30920
+  - name: transport
+    protocol: TCP
+    port: 9300
+---
+# Source: opensearch/charts/opensearch/templates/service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: opensearch-headless
+  labels:
+    helm.sh/chart: opensearch-2.18.0
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "2.12.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: opensearch
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  clusterIP: None # This is needed for statefulset hostnames like opensearch-0 to resolve
+  # Create endpoints also if the related pod isn't ready
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: release-name
+  ports:
+  - name: http
+    port: 9200
+  - name: transport
+    port: 9300
+  - name: metrics
+    port: 9600
+---
+# Source: opensearch/charts/opensearch/templates/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: opensearch
+  labels:
+    helm.sh/chart: opensearch-2.18.0
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "2.12.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: opensearch
+  annotations:
+    majorVersion: "2"
+spec:
+  serviceName: opensearch-headless
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: opensearch
+      app.kubernetes.io/instance: release-name
+  replicas: 1
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - metadata:
+      name: opensearch
+    spec:
+      accessModes:
+      - "ReadWriteOnce"
+      resources:
+        requests:
+          storage: "2Gi"
+      storageClassName: "local-path"
+  template:
+    metadata:
+      name: "opensearch"
+      labels:
+        helm.sh/chart: opensearch-2.18.0
+        app.kubernetes.io/name: opensearch
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/version: "2.12.0"
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: opensearch
+      annotations:
+        configchecksum: d7855603ae118a543235db077d891f48614a0d566d6d006832d3fed7c77934f
+    spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+      automountServiceAccountToken: false
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - release-name
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - opensearch
+      terminationGracePeriodSeconds: 120
+      volumes:
+      - name: config
+        configMap:
+          name: opensearch-config
+      - emptyDir: {}
+        name: config-emptydir
+      enableServiceLinks: true
+      initContainers:
+      - name: fsgroup-volume
+        image: "busybox:latest"
+        imagePullPolicy: "IfNotPresent"
+        command: ['sh', '-c']
+        args:
+          - 'chown -R 1000:1000 /usr/share/opensearch/data'
+        securityContext:
+          runAsUser: 0
+        resources:
+          {}
+        volumeMounts:
+          - name: "opensearch"
+            mountPath: /usr/share/opensearch/data
+      - name: configfile
+        image: "opensearchproject/opensearch:2.12.0"
+        imagePullPolicy: "IfNotPresent"
+        command:
+        - sh
+        - -c
+        - |
+          #!/usr/bin/env bash
+          cp -r /tmp/configfolder/*  /tmp/config/
+        resources:
+          {}
+        volumeMounts:
+          - mountPath: /tmp/config/
+            name: config-emptydir
+          - name: config
+            mountPath: /tmp/configfolder/opensearch.yml
+            subPath: opensearch.yml
+      containers:
+      - name: "opensearch"
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 1000
+
+        image: "opensearchproject/opensearch:2.12.0"
+        imagePullPolicy: "IfNotPresent"
+        readinessProbe:
+          failureThreshold: 3
+          periodSeconds: 5
+          tcpSocket:
+            port: 9200
+          timeoutSeconds: 3
+        startupProbe:
+          failureThreshold: 30
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          tcpSocket:
+            port: 9200
+          timeoutSeconds: 3
+        ports:
+        - name: http
+          containerPort: 9200
+        - name: transport
+          containerPort: 9300
+        - name: metrics
+          containerPort: 9600
+        resources:
+          limits:
+            cpu: 800m
+            memory: 768Mi
+          requests:
+            cpu: 500m
+            memory: 512Mi
+        env:
+        - name: node.name
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: cluster.initial_master_nodes
+          value: "opensearch-0,"
+        - name: discovery.seed_hosts
+          value: "opensearch-cluster-master-headless"
+        - name: cluster.name
+          value: "opensearch-cluster"
+        - name: network.host
+          value: "0.0.0.0"
+        - name: OPENSEARCH_JAVA_OPTS
+          value: "-Xms512m -Xmx512m"
+        - name: node.roles
+          value: "master,ingest,data,"
+        - name: discovery.type
+          value: single-node
+        - name: DISABLE_INSTALL_DEMO_CONFIG
+          value: "true"
+        - name: DISABLE_SECURITY_PLUGIN
+          value: "true"
+        - name: DISABLE_PERFORMANCE_ANALYZER_AGENT_CLI
+          value: "true"
+        volumeMounts:
+        - name: "opensearch"
+          mountPath: /usr/share/opensearch/data
+        - name: config-emptydir
+          mountPath: /usr/share/opensearch/config/opensearch.yml
+          subPath: opensearch.yml
