@@ -2,14 +2,12 @@ fullnameOverride: "opensearch"
 
 clusterName: "opensearch-cluster"
 nodeGroup: "single-node"
-replicas: 1
 roles:
   - master
   - data
   - ingest
 
-plugins:
-  install: []  # no extra plugins
+replicas: 1
 
 persistence:
   enabled: true
@@ -26,20 +24,26 @@ resources:
     cpu: 300m
     memory: 1Gi
 
+# 🔥 Important: set discovery.type directly to skip cluster discovery
 extraEnvs:
-  - name: "discovery.type"
+  - name: discovery.type
     value: "single-node"
   - name: DISABLE_SECURITY_PLUGIN
     value: "true"
-  - name: DISABLE_INSTALL_DEMO_CONFIG
-    value: "true"
   - name: DISABLE_PERFORMANCE_ANALYZER_AGENT_CLI
     value: "true"
+  - name: DISABLE_INSTALL_DEMO_CONFIG
+    value: "true"
+  - name: OPENSEARCH_INITIAL_ADMIN_PASSWORD
+    value: "no-password-needed"  # just set anything so it doesn't complain
 
 securityConfig:
   enabled: false
 security:
   enabled: false
+
+plugins:
+  install: []  # ensure no extra plugins
 
 service:
   type: NodePort
@@ -47,17 +51,4 @@ service:
   nodePort: 30920
 
 indexManagement:
-  enabled: true
-  policies:
-    - policyId: delete-after-2h
-      description: "Delete logs after 2 hours"
-      schema:
-        policy:
-          description: "delete after 2h"
-          default_state: "delete"
-          states:
-            - name: "delete"
-              actions:
-                - delete:
-                    delete_searchable_snapshot: true
-              transitions: []
+  enabled: false
