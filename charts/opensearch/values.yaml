@@ -47,6 +47,7 @@ opensearch:
   security:
     enabled: false
 
+
   service:
     type: NodePort
     port: 9200
