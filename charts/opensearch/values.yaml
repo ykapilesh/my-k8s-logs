@@ -1,54 +1,46 @@
-fullnameOverride: "opensearch"
-
 clusterName: "opensearch-cluster"
-nodeGroup: "single-node"
-roles:
-  - master
-  - data
-  - ingest
 
-replicas: 1
+master:
+  replicas: 1
+  persistence:
+    enabled: true
+    size: 2Gi
+    storageClass: "local-path"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 300m
+      memory: 1Gi
+  extraEnvs:
+    - name: discovery.type
+      value: "single-node"
+    - name: DISABLE_SECURITY_PLUGIN
+      value: "true"
+    - name: DISABLE_PERFORMANCE_ANALYZER_AGENT_CLI
+      value: "true"
+    - name: DISABLE_INSTALL_DEMO_CONFIG
+      value: "true"
 
-persistence:
-  enabled: true
-  size: 2Gi
-  storageClass: "local-path"
+data:
+  replicas: 0
 
-opensearchJavaOpts: "-Xmx512M -Xms512M"
+ingest:
+  replicas: 0
 
-resources:
-  requests:
-    cpu: 100m
-    memory: 512Mi
-  limits:
-    cpu: 300m
-    memory: 1Gi
-
-# 🔥 Important: set discovery.type directly to skip cluster discovery
-extraEnvs:
-  - name: discovery.type
-    value: "single-node"
-  - name: DISABLE_SECURITY_PLUGIN
-    value: "true"
-  - name: DISABLE_PERFORMANCE_ANALYZER_AGENT_CLI
-    value: "true"
-  - name: DISABLE_INSTALL_DEMO_CONFIG
-    value: "true"
-  - name: OPENSEARCH_INITIAL_ADMIN_PASSWORD
-    value: "no-password-needed"  # just set anything so it doesn't complain
-
-securityConfig:
-  enabled: false
-security:
-  enabled: false
+coordinating:
+  replicas: 0
 
 plugins:
-  install: []  # ensure no extra plugins
+  install: []
 
 service:
   type: NodePort
   port: 9200
   nodePort: 30920
 
-indexManagement:
+securityConfig:
+  enabled: false
+security:
   enabled: false
